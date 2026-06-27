@@ -12,10 +12,13 @@ description: "Generates structured technical specification (SPEC) from PRD docum
 ## 前置依赖
 本 Skill 需要一份已完成的 PRD 作为输入。如果用户未提供 PRD，提醒用户先使用 **prd-maker** 生成 PRD，再调用本 Skill。
 
+**DSL 增强输入**：如果 PRD 附带了 prd-maker 生成的领域 DSL 制品（`glossary.yaml` / `lifecycle.yaml` / `rules.yaml` / `capabilities.yaml` / `acceptance.yaml` / `IMPLEMENTATION_STATUS.md`），优先以 DSL 中的术语定义、状态机转移、业务规则和验收标准作为结构化输入——它们比自然语言 PRD 更精确，能显著提升数据模型和 API 设计的准确度。
+
 ## 工作流程
 
 ### Step 1: 技术分析与合理推演
 - 深入阅读 PRD 中的用户量预期、功能矩阵（P0/P1/P2）和非功能需求。
+- **若输入包含 DSL 制品**：优先从 `lifecycle.yaml` 提取状态枚举设计数据模型字段，从 `rules.yaml` 提取业务判定逻辑设计 API 校验层，从 `acceptance.yaml` 的 `verify` 命令反推集成测试骨架。
 - 基于 PRD 的规模与复杂度，结合当前业界主流技术栈，进行合理的技术选型推演。拒绝直接拒绝用户，即使 PRD 存在模糊点，也基于行业最佳实践进行补全。
 
 ### Step 2: 批判性审视与生成
@@ -30,6 +33,7 @@ description: "Generates structured technical specification (SPEC) from PRD docum
 在 SPEC 最顶部，以引用块形式指出：
 - PRD 中可能存在的技术风险、性能瓶颈或安全漏洞
 - 对 PRD 中不合理预期的纠正建议（如"PRD 要求同时支持 100 万并发，但预算仅限单机部署，建议先做水平扩展方案"）
+- **若输入包含 DSL 制品**：检查 `IMPLEMENTATION_STATUS.md` 中标记的差距项，评估其对技术方案的影响；`status: partial` 的 DSL 条目对应的数据模型/API 应标记为「待补全」
 - 如果 PRD 在技术上已足够合理，说明"当前 PRD 在技术层面可行，无重大风险点"
 
 ### 2. 技术选型与理由

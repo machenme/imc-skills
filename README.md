@@ -20,9 +20,9 @@ cp -r <skill-name> <project-root>/.claude/skills/
 
 ## 技能列表
 
-### 1. prd-maker — PRD 生成器
+### 1. prd-maker — PRD 生成器 + 领域 DSL 制品
 
-**一句话**：把模糊的产品想法变成结构化的 PRD 文档。
+**一句话**：把模糊的产品想法变成结构化 PRD，同时生成术语表、状态机、规则、能力、验收五组小 DSL——在产品和代码之间架起 AI 可精确读取的桥梁。
 
 **触发方式**：对着 Claude Code 说"帮我写个 PRD"、"帮我规整一下这个产品思路"、"这个功能怎么做需求分析"。
 
@@ -30,23 +30,28 @@ cp -r <skill-name> <project-root>/.claude/skills/
 - 把零散想法补全为逻辑闭环的产品方案
 - 以资深产品经理视角审视商业漏洞，写入 PM 备注
 - 输出包含目标用户画像、P0/P1/P2 功能矩阵、用户故事 Given-When-Then、非功能需求的结构化 Markdown PRD
+- **（新增）** 提炼五组小 DSL：术语表 (glossary) → 状态机 (lifecycle) → 规则 (rules) → 能力 (capabilities) → 验收 (acceptance)
+- **（新增）** 生成 `IMPLEMENTATION_STATUS.md` 差距文档，显式标记「产品定义 vs 当前实现」的差距
+- **（新增）** 输出 AI 治理规则片段（冲突优先级），可直接写入 `AGENTS.md`
 
-**输出**：一份可以直接拿去开需求评审的 Markdown PRD。
+**核心理念**：PRD 管「用户要什么」，DSL 管「代码该怎么写、改到哪算完、哪里还不能假装做完」。每个 DSL 条目自带 `id` / `status` / `gap` 三元数据——没有 status/gap，AI 会把规划当实现。
+
+**输出**：一份 Markdown PRD（可直接开需求评审）+ 五组 YAML DSL 片段（可直接放入 `domain/` 目录驱动 AI 编码）。
 
 ---
 
 ### 2. spec-maker — 技术规范生成器
 
-**一句话**：拿到 PRD 后，自动输出生产级技术规范文档。
+**一句话**：拿到 PRD（含 DSL 制品更佳）后，自动输出生产级技术规范文档。
 
 **触发方式**：喂一份 PRD 后说"帮我生成技术方案"、"帮我写 SPEC"、"设计技术架构"。
 
-**前置依赖**：需要一份 PRD 作为输入（建议先用 `prd-maker` 生成）。
+**前置依赖**：需要一份 PRD 作为输入（建议先用 `prd-maker` 生成）。若 PRD 附带 DSL 制品（glossary/lifecycle/rules/capabilities/acceptance），会自动提取状态枚举、业务规则和验收标准作为结构化输入，提升数据模型和 API 设计精度。
 
 **做的事**：
 - 结合 PRD 的规模与复杂度做技术选型，每项附具体理由
-- 输出完整数据模型（逐字段列出 + ER 关系）
-- 输出 RESTful API 设计（Request/Response JSON 示例 + 错误码）
+- 输出完整数据模型（逐字段列出 + ER 关系），优先从 DSL 状态枚举提取字段设计
+- 输出 RESTful API 设计（Request/Response JSON 示例 + 错误码），业务校验层对齐 DSL 规则
 - 给出生产级项目目录结构
 - CTO 评审备注指出 PRD 中的技术风险
 
@@ -77,13 +82,18 @@ cp -r <skill-name> <project-root>/.claude/skills/
 ## 推荐工作流
 
 ```
-用户的想法 → prd-maker → PRD 文档
-                ↓
-           spec-maker → 技术 SPEC
-                ↓
-           开发团队编码
-                ↓
-           java-run → 一键启动 & RUNBOOK.md
+用户的想法 → prd-maker → PRD 文档 + 领域 DSL 制品
+                             │  (glossary / lifecycle / rules
+                             │   capabilities / acceptance
+                             │   IMPLEMENTATION_STATUS.md)
+                             ↓
+                        spec-maker → 技术 SPEC
+                             ↓
+                        开发团队编码
+                             ↓
+                        java-run → 一键启动 & RUNBOOK.md
 ```
+
+**DSL 层的角色**：PRD 管「用户要什么」，DSL 管「代码该怎么写、改到哪算完」。五组小 DSL 用同一组 `id` 把产品故事、业务规则、权限、测试和实现差距钉在同一张网上——让后续的 spec-maker 和 AI 编码工具知道改哪、改到什么算做完、哪里还不能假装做完。
 
 三个 skill 可独立使用，但串起来就是一条完整的产品→技术→交付流水线。
