@@ -1,6 +1,6 @@
 # imc-skill
 
-个人 Claude Code 技能集，覆盖产品规划、技术方案设计与 Java 项目一键启动三大场景。
+个人 Claude Code 技能集，覆盖产品规划、技术方案设计、Java 项目一键启动与数据库 ER 图自动生成四大场景。
 
 ## 安装
 
@@ -79,6 +79,24 @@ cp -r <skill-name> <project-root>/.claude/skills/
 
 ---
 
+### 4. er-maker — 数据库 ER 图自动生成器
+
+**一句话**：连接项目数据库，一键生成标准 DBML ER 图 + SQL 建表语句 + 精简版 ER 图。
+
+**触发方式**：对着 Claude Code 说"生成 ER 图"、"导出 DBML"、"帮我逆向这个数据库"、"生成数据库文档"。
+
+**做的事**：
+- 自动扫描项目配置文件（`.env` / `application.yml`）获取数据库连接信息
+- 智能识别 MySQL / PostgreSQL / SQLite 并使用对应方言查询 Schema 元数据
+- 生成 `e-r/建表语句.sql` — 完整 DDL（只读，禁止任何写操作）
+- 生成 `e-r/E-R图.dbml` — 标准版 ER 图（含全部字段细节 + 外键关系）
+- 生成 `e-r/E-R图(精简).dbml` — 精简版 ER 图（仅表名 + 关系，快速掌握宏观架构）
+- 无外键约束的遗留数据库自动按命名约定推断关系，标注 `inferred`
+
+**输出**：`e-r/` 目录下的三个文件，可直接用 dbdocs.io / dbdiagram.io 渲染。
+
+---
+
 ## 推荐工作流
 
 ```
@@ -88,12 +106,15 @@ cp -r <skill-name> <project-root>/.claude/skills/
                              │   IMPLEMENTATION_STATUS.md)
                              ↓
                         spec-maker → 技术 SPEC
-                             ↓
-                        开发团队编码
-                             ↓
-                        java-run → 一键启动 & RUNBOOK.md
+                             │
+                             ├─→ 开发团队编码
+                             │        ↓
+                             │   java-run → 一键启动 & RUNBOOK.md
+                             │
+                             └─→ er-maker → ER 图 + DDL
+                                   (随时可用，不依赖前序步骤)
 ```
 
 **DSL 层的角色**：PRD 管「用户要什么」，DSL 管「代码该怎么写、改到哪算完」。五组小 DSL 用同一组 `id` 把产品故事、业务规则、权限、测试和实现差距钉在同一张网上——让后续的 spec-maker 和 AI 编码工具知道改哪、改到什么算做完、哪里还不能假装做完。
 
-三个 skill 可独立使用，但串起来就是一条完整的产品→技术→交付流水线。
+四个 skill 可独立使用，但串起来就是一条完整的产品→技术→交付+文档流水线。
