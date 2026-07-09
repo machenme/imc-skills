@@ -40,18 +40,23 @@ cp -r <skill-name> ~/.claude/skills/
 ## 联合使用
 
 五个技能可独立使用，也可串成完整流水线：
+```mermaid
+graph TD
+    A[想法] --> B[prd-maker]
+    B --> C[spec-maker]
+    C --> D[java-run]
+    
+    %% 独立调用分支
+    C -. 任何时候可独立调用 .-> D
+    B -. 任何时候可独立调用 .-> C
+
+    %% 注释连接
+    A -.-> A_txt[结构化产品文档]
+    B -.-> B_txt[PRD + 五组 DSL<br>比纯文本 PRD 精确 10 倍]
+    C -.-> C_txt[可交给开发 Agent 的技术 SPEC]
+    D -.-> D_txt[一键启动跑起来的项目]
 
 ```
-                    ┌─ 任何时候可独立调用 ─┐
-                    ↓                       ↓
-想法 → prd-maker → spec-maker → java-run
-  │        │            │            │
-  │        │            │            └─ 一键启动跑起来的项目
-  │        │            └─ 可交给开发 Agent 的技术 SPEC
-  │        └─ PRD + 五组 DSL（比纯文本 PRD 精确 10 倍）
-  └─ 结构化产品文档
-```
-
 | 串联路径 | 适用场景 |
 |----------|------|
 | **prd-maker → spec-maker** | 从零做产品：先出 PRD 定范围，再出 SPEC 定技术方案 |
