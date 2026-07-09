@@ -1,1 +1,2 @@
 如果你需要将本 ASA 架构或 java-run 技能集成到闭源商业软件中，请联系 machenme [AT] outlook [DOT] com 获取商业授权。
+If you need to integrate this ASA architecture or Java-run skills into closed-source commercial software, please contact machenme[AT]outlook[DOT]com for a commercial license.
