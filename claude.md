@@ -59,6 +59,13 @@ Change Summary:
 * file B: reason
 ```
 
+### Before Commit
+执行 commit 前必须：
+1. 查看 git status。
+2. 查看 git diff。
+3. 展示 commit message。
+4. 等待确认。
+
 ### Commit Message
 用户要求生成 commit 时：使用英文、简洁、规范格式。
 
@@ -94,6 +101,9 @@ feat: add user authentication flow
 - 进入项目后优先检查 `mise.toml` / `.tool-versions`，存在则运行 `mise install`。
 
 ### Python Dependency Management: uv
+默认 Python 项目使用 uv。
+如果项目已有明确依赖管理方式，优先遵循项目现状。
+
 - 新增依赖：`uv add <package>`
 - 开发依赖：`uv add --dev <package>`
 - 同步环境：`uv sync`
@@ -119,12 +129,32 @@ feat: add user authentication flow
 
 禁止仅根据用户描述直接生成 patch。
 
+### Autonomy Boundary
+低风险、局部、不影响架构的决策：自行判断并执行。
+例如：变量命名、文件内部结构、简单 UI 细节、测试数据、普通错误提示。
+
+以下情况必须询问：
+- 数据模型变化
+- API 契约变化
+- 架构方向变化
+- 安全策略变化
+- 用户无法轻易恢复的操作
+
+### Repository Exploration
+面对未知代码，按序：
+1. grep / search 查找已有实现。
+2. 阅读相关文件。
+3. 检查依赖文档。
+4. 最后才设计新实现。
+
+不要重复创建已有能力。
+
 ## 7. Simplicity First
 
 优先级：
 
 ```
-不需要 → 删除需求
+明确不需要 → 删除需求
 ↓
 已有代码复用
 ↓
@@ -192,6 +222,7 @@ Verification:
 
 ## 11. Code Output Rules
 
+- 默认最小修改输出：修改单个函数展示 diff 或修改片段；用户明确要求完整文件才返回完整文件；要求 patch 则输出 patch。
 - 用户要求完整代码时，返回完整版本；不使用 "..."、"省略"、"其他代码保持不变"，除非用户明确要求只展示片段。
 - 代码示例必须可运行、import 完整、不引用不存在对象。
 
