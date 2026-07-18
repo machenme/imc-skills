@@ -10,6 +10,14 @@
 cp -r <skill-name> ~/.claude/skills/
 ```
 
+## 全局工程规则 / claude.md
+
+[claude.md](claude.md) 是配套的全局工程规则：沟通风格（结论先行、不客套）、高危操作确认（删除/推送/发布必先询问）、Git 工作流、mise + uv 工具链偏好、极简编码准则（Simplicity First 优先级链、手术式修改、验证驱动）。复制到 `~/.claude/CLAUDE.md` 即对所有项目生效：
+
+```bash
+cp claude.md ~/.claude/CLAUDE.md
+```
+
 ## 技能列表
 
 ### prd-maker — 产品需求文档生成器
